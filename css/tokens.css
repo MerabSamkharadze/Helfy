@@ -55,6 +55,7 @@
 
     --ease: cubic-bezier(0.4, 0, 0.2, 1);
     --duration: 0.3s;
+    --duration-fast: 0.2s;
     --ticker-speed: 45s;
 
     --z-sticky: 50;

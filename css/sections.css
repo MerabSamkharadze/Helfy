@@ -391,7 +391,6 @@
     border-radius: var(--radius-xxl) var(--radius-xxl) 0 0;
     background: var(--color-footer);
     color: var(--color-white);
-    font-family: var(--font-body);
 }
 
 .footer__top {

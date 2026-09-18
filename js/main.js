@@ -28,12 +28,13 @@ function initMenu() {
 
     const panel = menu.querySelector('.menu__panel');
     const searchInput = menu.querySelector('.menu__search-input');
-    const searchForm = menu.querySelector('.menu__search');
     const openers = document.querySelectorAll('[data-menu-open]');
     const focusable = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
     let lastOpener = null;
 
-    function setExpanded(state) {
+    function setOpen(state) {
+        menu.classList.toggle('is-open', state);
+        document.body.classList.toggle('is-locked', state);
         openers.forEach((btn) => {
             if (btn.hasAttribute('aria-expanded')) btn.setAttribute('aria-expanded', state);
         });
@@ -41,23 +42,19 @@ function initMenu() {
 
     function open(opener) {
         lastOpener = opener;
-        menu.classList.add('is-open');
-        document.body.style.overflow = 'hidden';
-        setExpanded(true);
+        setOpen(true);
 
         const target = opener.dataset.menuOpen === 'search' && searchInput
             ? searchInput
             : panel.querySelector(focusable);
-        if (target) target.focus({ preventScroll: true });
+        target?.focus({ preventScroll: true });
         document.addEventListener('keydown', onKeydown);
     }
 
     function close() {
-        menu.classList.remove('is-open');
-        document.body.style.overflow = '';
-        setExpanded(false);
+        setOpen(false);
         document.removeEventListener('keydown', onKeydown);
-        if (lastOpener) lastOpener.focus({ preventScroll: true });
+        lastOpener?.focus({ preventScroll: true });
     }
 
     function onKeydown(e) {
@@ -82,7 +79,7 @@ function initMenu() {
 
     openers.forEach((btn) => btn.addEventListener('click', () => open(btn)));
     menu.querySelectorAll('[data-menu-close]').forEach((el) => el.addEventListener('click', close));
-    if (searchForm) searchForm.addEventListener('submit', (e) => e.preventDefault());
+    menu.querySelector('.menu__search')?.addEventListener('submit', (e) => e.preventDefault());
 }
 
 function initCarousel(root) {
@@ -100,7 +97,6 @@ function initCarousel(root) {
 
     const maxScroll = () => Math.max(0, track.scrollWidth - track.clientWidth);
     const step = () => (slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth) || 1;
-    const pageCount = () => 1 + Math.ceil(maxScroll() / step() - 0.05);
 
     function scrollToPage(page) {
         page = Math.max(0, Math.min(pages - 1, page));
@@ -110,43 +106,37 @@ function initCarousel(root) {
         });
     }
 
-    function currentPage() {
-        if (maxScroll() - track.scrollLeft < 1) return pages - 1;
-        return Math.max(0, Math.min(pages - 1, Math.round(track.scrollLeft / step())));
+    function createDot(index) {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'carousel__dot';
+        dot.setAttribute('role', 'tab');
+        dot.setAttribute('aria-label', `${index + 1} von ${pages}`);
+        dot.addEventListener('click', () => scrollToPage(index));
+        dot.addEventListener('keydown', (e) => {
+            if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+            e.preventDefault();
+            const next = (index + (e.key === 'ArrowRight' ? 1 : -1) + pages) % pages;
+            scrollToPage(next);
+            dots[next].focus();
+        });
+        return dot;
     }
 
-    function buildDots() {
-        if (!dotsWrap) return;
-        dotsWrap.innerHTML = '';
-        dots = [];
+    function measure() {
+        const count = 1 + Math.ceil((maxScroll() - 1) / step());
+        if (count === pages) return;
 
-        for (let i = 0; i < pages; i += 1) {
-            const dot = document.createElement('button');
-            dot.type = 'button';
-            dot.className = 'carousel__dot';
-            dot.setAttribute('role', 'tab');
-            dot.setAttribute('aria-label', `${i + 1} von ${pages}`);
-            dot.addEventListener('click', () => scrollToPage(i));
-            dot.addEventListener('keydown', (e) => {
-                if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-                e.preventDefault();
-                const next = (i + (e.key === 'ArrowRight' ? 1 : -1) + pages) % pages;
-                scrollToPage(next);
-                dots[next].focus();
-            });
-            dotsWrap.appendChild(dot);
-            dots.push(dot);
+        pages = count;
+        if (dotsWrap) {
+            dots = Array.from({ length: pages }, (_, i) => createDot(i));
+            dotsWrap.replaceChildren(...dots);
         }
     }
 
     function update() {
-        const count = pageCount();
-        if (count !== pages) {
-            pages = count;
-            buildDots();
-        }
-        current = currentPage();
-        const scrollable = maxScroll() > 1;
+        const x = track.scrollLeft;
+        current = maxScroll() - x < 1 ? pages - 1 : Math.min(pages - 1, Math.round(x / step()));
 
         dots.forEach((dot, i) => {
             const active = i === current;
@@ -154,12 +144,12 @@ function initCarousel(root) {
             dot.setAttribute('aria-selected', active);
             dot.tabIndex = active ? 0 : -1;
         });
-        if (prevBtn) prevBtn.disabled = !scrollable || current === 0;
-        if (nextBtn) nextBtn.disabled = !scrollable || current === pages - 1;
+        if (prevBtn) prevBtn.disabled = current === 0;
+        if (nextBtn) nextBtn.disabled = current === pages - 1;
     }
 
-    if (prevBtn) prevBtn.addEventListener('click', () => scrollToPage(current - 1));
-    if (nextBtn) nextBtn.addEventListener('click', () => scrollToPage(current + 1));
+    prevBtn?.addEventListener('click', () => scrollToPage(current - 1));
+    nextBtn?.addEventListener('click', () => scrollToPage(current + 1));
 
     track.addEventListener('scroll', () => {
         if (ticking) return;
@@ -170,7 +160,11 @@ function initCarousel(root) {
         });
     }, { passive: true });
 
-    window.addEventListener('resize', update);
+    window.addEventListener('resize', () => {
+        measure();
+        update();
+    });
+    measure();
     update();
 }
 

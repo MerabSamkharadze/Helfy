@@ -21,6 +21,10 @@ body {
     overflow-x: hidden;
 }
 
+body.is-locked {
+    overflow: hidden;
+}
+
 h1, h2, h3, h4, p, ul, ol, blockquote, figure, hr {
     margin: 0;
 }
@@ -127,7 +131,7 @@ svg {
     color: var(--color-white);
     border-radius: var(--radius-s);
     transform: translateY(-200%);
-    transition: transform 0.2s var(--ease);
+    transition: transform var(--duration-fast) var(--ease);
 }
 
 .skip-link:focus {
