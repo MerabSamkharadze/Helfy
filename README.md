@@ -1,19 +1,14 @@
-# Helfy Landing Page - Integration Assignment
+# Helfy landing page
 
-## Description
-This project is an implementation of the Helfy Landing Page built using HTML5, CSS3, and Vanilla JavaScript.
+Simple landing page for Helfy, done in plain HTML / CSS / JS – no frameworks, no build step.
 
-## Setup & Running Locally
-No build setup or external dependencies are required.
-1. Download or clone this repository.
-2. Open `index.html` directly in any web browser.
+## Running it
 
-## Tested Breakpoints
-- Desktop (1920px)
-- Small Desktop / Laptop (1280px)
-- Mobile (390px)
+Just open `index.html` in a browser. That's it.
 
-## Key Features
-- Hero section with required ID (`real_helfy_hero_section`)
-- Fully responsive layout without frameworks
-- Interactive mobile navigation menu# Helfy
+## Notes
+
+- The hero section has the id `real_helfy_hero_section` as required.
+- Checked at 1920px, 1280px and 390px widths.
+- The mobile menu (hamburger) is handled in `script.js`, everything else is CSS only.
+- Images live in `assets/` (`logo.svg`, `hero-image.png`, `partner1-3.svg`).
