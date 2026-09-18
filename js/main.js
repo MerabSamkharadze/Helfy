@@ -99,9 +99,7 @@ function initCarousel(root) {
     let ticking = false;
 
     const maxScroll = () => Math.max(0, track.scrollWidth - track.clientWidth);
-    // distance between two neighbouring slides (slide width + gap)
     const step = () => (slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth) || 1;
-    // one dot per reachable scroll position (depends on how many slides fit in the viewport)
     const pageCount = () => 1 + Math.ceil(maxScroll() / step() - 0.05);
 
     function scrollToPage(page) {
