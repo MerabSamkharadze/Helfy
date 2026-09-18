@@ -1,43 +1,29 @@
-(function () {
-  var toggle = document.getElementById('navToggle');
-  var nav = document.getElementById('mainNav');
-  var header = document.querySelector('.site-header');
+const nav = document.getElementById('mainNav');
+const navToggle = document.getElementById('navToggle');
+const header = document.querySelector('.site-header');
 
-  function closeNav() {
+function closeNav() {
     nav.classList.remove('open');
-    toggle.classList.remove('open');
-    toggle.setAttribute('aria-expanded', 'false');
-    document.body.classList.remove('nav-open');
-  }
+    navToggle.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+}
 
-  toggle.addEventListener('click', function () {
-    var isOpen = nav.classList.toggle('open');
-    toggle.classList.toggle('open', isOpen);
-    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    document.body.classList.toggle('nav-open', isOpen);
-  });
+navToggle.addEventListener('click', () => {
+    const isOpen = nav.classList.toggle('open');
+    navToggle.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', isOpen);
+});
 
-  // close the menu after picking a link on mobile
-  nav.addEventListener('click', function (e) {
+nav.addEventListener('click', (e) => {
     if (e.target.tagName === 'A') closeNav();
-  });
+});
 
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && nav.classList.contains('open')) closeNav();
-  });
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeNav();
+});
 
-  // if the window gets resized back to desktop while the menu is open
-  window.addEventListener('resize', function () {
-    if (window.innerWidth > 768 && nav.classList.contains('open')) closeNav();
-  });
-
-  // small shadow under the header once you scroll a bit
-  function onScroll() {
+window.addEventListener('scroll', () => {
     header.classList.toggle('scrolled', window.scrollY > 10);
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+});
 
-  var year = document.getElementById('year');
-  if (year) year.textContent = new Date().getFullYear();
-})();
+document.getElementById('year').textContent = new Date().getFullYear();

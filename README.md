@@ -1,6 +1,6 @@
 # Helfy landing page
 
-Simple landing page for Helfy, done in plain HTML / CSS / JS – no frameworks, no build step.
+Simple landing page for Helfy, done in plain HTML / CSS / JS - no frameworks, no build step.
 
 ## Running it
 
